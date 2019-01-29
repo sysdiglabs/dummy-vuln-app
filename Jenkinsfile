@@ -1,23 +1,34 @@
-node {
-    stage('Checkout') {
-        checkout scm
+pipeline {
+    agent any
+    parameters {
+        string(name: 'DOCKER_REPOSITORY', description: 'Docker image name', defaultValue: '')
     }
-    stage('Build Image') {
-        withCredentials([string(credentialsId: 'docker-repository-name', variable: 'DOCKER_REPOSITORY')]) {
-            sh 'sudo docker build -f Dockerfile -t ${DOCKER_REPOSITORY} .'
+    environment {
+        DOCKER = credentials('docker-repository-credentials')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
         }
-    }
-    stage('Push Image') {
-        withCredentials([usernamePassword(credentialsId: 'docker-repository-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME'),
-                         string(credentialsId: 'docker-repository-name', variable: 'DOCKER_REPOSITORY')]) {
-            sh '''
-                sudo docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
-                sudo docker push ${DOCKER_REPOSITORY}
-                echo docker.io/${DOCKER_REPOSITORY} > sysdig_secure_images
-            '''
+        stage('Build Image') {
+            steps {
+                sh "sudo docker build --no-cache -f Dockerfile -t ${params.DOCKER_REPOSITORY} ."
+            }
         }
-    }
-    stage('Scanning Image') {
-        anchore 'sysdig_secure_images'
-    }
+        stage('Push Image') {
+            steps {
+                sh "sudo docker login --username ${DOCKER_USR} --password ${DOCKER_PSW}"
+                sh "sudo docker push ${params.DOCKER_REPOSITORY}"
+                sh "echo docker.io/${params.DOCKER_REPOSITORY} > sysdig_secure_images"
+            }
+        }
+        stage('Scanning Image') {
+            steps {
+                anchore 'sysdig_secure_images'
+            }
+        }
+   }
 }
