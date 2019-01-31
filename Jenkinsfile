@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Build Image') {
             steps {
-                sh "sudo docker build --no-cache -f Dockerfile -t ${params.DOCKER_REPOSITORY} ."
+                sh "sudo docker build -f Dockerfile -t ${params.DOCKER_REPOSITORY} ."
             }
         }
         stage('Push Image') {
