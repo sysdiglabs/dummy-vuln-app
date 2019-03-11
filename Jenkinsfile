@@ -27,7 +27,7 @@ pipeline {
         }
         stage('Scanning Image') {
             steps {
-                anchore 'sysdig_secure_images'
+                sysdigSecure 'sysdig_secure_images'
             }
         }
    }
