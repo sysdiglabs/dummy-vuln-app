@@ -1,0 +1,33 @@
+pool:
+  vmImage: 'ubuntu-16.04'
+
+container: 
+  image: tembleking/inline_scan:latest
+  options: -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock
+
+variables:
+  imageName: 'sysdigcicd/cronagent'
+  tags: |
+    latest
+steps:
+- task: Docker@2
+  displayName: Build image
+  inputs:
+    repository: $(imageName)
+    command: build
+    tags: $(tags)
+
+- script: inline_scan scan $(imageName):latest | tee /tmp/results
+  displayName: Scan image
+
+- script: "! grep stop /tmp/results"
+  displayName: Error on "stop" conditions
+
+- task: Docker@2
+  inputs:
+    command: 'login'
+
+- task: Docker@2
+  inputs:
+    command: 'push'
+    tags: $(tags)
