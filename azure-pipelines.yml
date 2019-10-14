@@ -2,11 +2,11 @@ pool:
   vmImage: 'ubuntu-16.04'
 
 container: 
-  image: tembleking/inline_scan:latest
+  image: sysdiglabs/secure_inline_scan:latest
   options: -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock
 
 variables:
-  imageName: 'sysdigcicd/cronagent'
+  imageName: 'sysdiglabs/dummy-vuln-app'
   tags: |
     latest
 steps:
@@ -17,11 +17,8 @@ steps:
     command: build
     tags: $(tags)
 
-- script: inline_scan scan $(imageName):latest | tee /tmp/results
+- script: inline_scan analyze -s https://secure.sysdig.com -k $(secureApiKey) $(imageName):latest
   displayName: Scan image
-
-- script: "! grep stop /tmp/results"
-  displayName: Error on "stop" conditions
 
 - task: Docker@2
   inputs:
