@@ -1,0 +1,20 @@
+
+variables:
+  CI_REGISTRY_IMAGE: "sysdiglabs/dummy-vuln-app"
+  SCAN_IMAGE_NAME: "sysdiglabs/secure_inline_scan:latest"
+  SYSDIG_SECURE_ENDPOINT: "https://secure.sysdig.com"
+
+docker-build-master:
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$SCAN_IMAGE_NAME" /bin/inline_scan analyze -s "$SYSDIG_SECURE_ENDPOINT" -k "$SYSDIG_SECURE_TOKEN" "$CI_REGISTRY_IMAGE"
+    - docker push "$CI_REGISTRY_IMAGE"
+  only:
+    - master
+
