@@ -1,0 +1,24 @@
+version: 2
+jobs:
+ build:
+   machine: true
+   environment:
+     IMAGE_NAME: "sysdiglabs/dummy-vuln-app:latest"
+     SCAN_IMAGE_NAME: "sysdiglabs/secure_inline_scan:latest"
+
+   steps:
+     # checkout the source code
+     - checkout
+
+     # login
+     - run: |
+         docker login --username "$DOCKER_USER" --password "$DOCKER_PASS"
+
+     # build the application image
+     - run: docker build -t "$IMAGE_NAME" .
+
+     # scan the image
+     - run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock $SCAN_IMAGE_NAME /bin/inline_scan analyze -s https://secure.sysdig.com -k "$SYSDIG_SECURE_TOKEN" "$IMAGE_NAME"
+
+     # deploy the image
+     - run: docker push "$IMAGE_NAME"
