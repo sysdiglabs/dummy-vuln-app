@@ -1,29 +1,59 @@
 pipeline {
-    agent any
+    agent {
+       kubernetes {
+           yaml """
+apiVersion: v1 
+kind: Pod 
+metadata: 
+    name: img 
+    annotations:
+      container.apparmor.security.beta.kubernetes.io/img: unconfined
+      container.seccomp.security.alpha.kubernetes.io/img: unconfined
+spec: 
+    containers: 
+      - name: img
+        image: r.j3ss.co/img
+        command: ['cat']
+        tty: true
+"""
+       }
+   }
+
+    parameters { 
+        string(name: 'DOCKER_REPOSITORY', defaultValue: 'sysdigcicd/cronagent', description: 'Name of the image to be built (e.g.: sysdiglabs/dummy-vuln-app)') 
+    }
+    
     environment {
         DOCKER = credentials('docker-repository-credentials')
     }
+    
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                container("img") {
+                    checkout scm
+                }
             }
         }
         stage('Build Image') {
             steps {
-                sh "sudo docker build -f Dockerfile -t sysdigcicd/cronagent ."
+                container("img") {
+                    sh "img build -f Dockerfile -t ${params.DOCKER_REPOSITORY} ."
+                }
             }
         }
         stage('Push Image') {
             steps {
-                sh "sudo docker login --username ${DOCKER_USR} --password ${DOCKER_PSW}"
-                sh "sudo docker push sysdigcicd/cronagent"
-                sh "echo docker.io/sysdigcicd/cronagent > sysdig_secure_images"
+                container("img") {
+                    sh "img login -u ${DOCKER_USR} -p ${DOCKER_PSW}"
+                    sh "img push ${params.DOCKER_REPOSITORY}"
+                    sh "echo ${params.DOCKER_REPOSITORY} > sysdig_secure_images"
+                }
             }
         }
         stage('Scanning Image') {
             steps {
-                sysdigSecure 'sysdig_secure_images'
+                sysdigSecure engineCredentialsId: 'sysdig-secure-api-credentials', name: 'sysdig_secure_images'
             }
         }
    }
