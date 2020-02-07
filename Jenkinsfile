@@ -12,7 +12,7 @@ metadata:
 spec: 
     containers: 
       - name: img
-        image: r.j3ss.co/img
+        image: sysdiglabs/img
         command: ['cat']
         tty: true
 """
