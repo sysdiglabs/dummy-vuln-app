@@ -5,15 +5,16 @@ pipeline {
 apiVersion: v1 
 kind: Pod 
 metadata: 
-    name: img 
+    name: dind
     annotations:
-      container.apparmor.security.beta.kubernetes.io/img: unconfined
-      container.seccomp.security.alpha.kubernetes.io/img: unconfined
+      container.apparmor.security.beta.kubernetes.io/dind: unconfined
+      container.seccomp.security.alpha.kubernetes.io/dind: unconfined
 spec: 
     containers: 
-      - name: img
-        image: sysdiglabs/img
-        command: ['cat']
+      - name: dind
+        image: docker:dind
+        securityContext:
+          privileged: true
         tty: true
 """
        }
@@ -37,16 +38,16 @@ spec:
         }
         stage('Build Image') {
             steps {
-                container("img") {
-                    sh "img build -f Dockerfile -t ${params.DOCKER_REPOSITORY} ."
+                container("dind") {
+                    sh "docker build -f Dockerfile -t ${params.DOCKER_REPOSITORY} ."
                 }
             }
         }
         stage('Push Image') {
             steps {
-                container("img") {
-                    sh "img login -u ${DOCKER_USR} -p ${DOCKER_PSW}"
-                    sh "img push ${params.DOCKER_REPOSITORY}"
+                container("dind") {
+                    sh "docker login -u ${DOCKER_USR} -p ${DOCKER_PSW}"
+                    sh "docker push ${params.DOCKER_REPOSITORY}"
                     sh "echo ${params.DOCKER_REPOSITORY} > sysdig_secure_images"
                 }
             }
