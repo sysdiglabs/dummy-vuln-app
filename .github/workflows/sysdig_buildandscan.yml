@@ -14,8 +14,12 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag sysdiglabs/dummy-vuln-app:latest
 
-    - name: Scan image
-      uses: sysdiglabs/scan-action@v1
+    - name: Sysdig Secure Inline Scan
+      uses: sysdiglabs/scan-action@v3
       with:
+        # Tag of the image to analyse
         image-tag: "sysdiglabs/dummy-vuln-app:latest"
+        # API token for Sysdig Scanning auth
         sysdig-secure-token: ${{ secrets.SYSDIG_SECURE_TOKEN }}
+        dockerfile-path: ./Dockerfile
+        input-type: docker-daemon
