@@ -20,7 +20,6 @@ phases:
 
   pre_build:
     commands:
-    - docker login -u $DOCKER_LOGIN_USER -p $DOCKER_LOGIN_PASSWORD
     - docker pull $SCAN_IMAGE_NAME
 
   build:
@@ -29,6 +28,6 @@ phases:
 
   post_build:
     commands:
-    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock $SCAN_IMAGE_NAME /bin/inline_scan analyze -s https://secure.sysdig.com -k $SYSDIG_SECURE_TOKEN $IMAGE_NAME
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock $SCAN_IMAGE_NAME --sysdig-url https://secure.sysdig.com --sysdig-token $SYSDIG_SECURE_TOKEN --storage-type docker-daemon $IMAGE_NAME
+    - docker login -u $DOCKER_LOGIN_USER -p $DOCKER_LOGIN_PASSWORD
     - docker push $IMAGE_NAME
-
