@@ -20,3 +20,5 @@ jobs:
         image-tag: sysdiglabs/dummy-vuln-app:latest
         # API token for Sysdig Scanning auth
         sysdig-secure-token: ${{ secrets.SYSDIG_SECURE_TOKEN }}
+        dockerfile-path: ./Dockerfile
+        input-type: docker-daemon
