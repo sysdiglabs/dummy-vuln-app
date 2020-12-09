@@ -8,22 +8,14 @@ env:
     DOCKER_LOGIN_USER: dockerLoginUser
     DOCKER_LOGIN_PASSWORD: dockerLoginPassword
     SYSDIG_SECURE_TOKEN: sysdigApiToken
-    
 
 phases:
-  #install:
-  #  runtime-versions:
-  #    docker: 18
-  #  commands:
-  #  - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
-  #  - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
-
   build:
     commands:
     - docker build . -t $IMAGE_NAME
-    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock $SCAN_IMAGE_NAME --sysdig-url https://secure.sysdig.com --sysdig-token $SYSDIG_SECURE_TOKEN --storage-type docker-daemon $IMAGE_NAME
 
   post_build:
     commands:
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock $SCAN_IMAGE_NAME --sysdig-url https://secure.sysdig.com --sysdig-token $SYSDIG_SECURE_TOKEN --storage-type docker-daemon $IMAGE_NAME
     - docker login -u $DOCKER_LOGIN_USER -p $DOCKER_LOGIN_PASSWORD
     - docker push $IMAGE_NAME
