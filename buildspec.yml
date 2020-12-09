@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     IMAGE_NAME: "sysdiglabs/dummy-vuln-app:latest"
-    SCAN_IMAGE_NAME: "quay.io/sysdig/secure_inline_scan:2"
+    SCAN_IMAGE_NAME: "quay.io/sysdig/secure-inline-scan:2"
   parameter-store:
     DOCKER_LOGIN_USER: dockerLoginUser
     DOCKER_LOGIN_PASSWORD: dockerLoginPassword
