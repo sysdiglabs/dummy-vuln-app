@@ -15,6 +15,7 @@ jobs:
       run: docker build . --file Dockerfile --tag sysdiglabs/dummy-vuln-app:latest
 
     - name: Sysdig Secure Inline Scan
+      id: scan
       uses: sysdiglabs/scan-action@v3
       with:
         # Tag of the image to analyse
@@ -23,3 +24,9 @@ jobs:
         sysdig-secure-token: ${{ secrets.KUBELAB_SECURE_API_TOKEN }}
         dockerfile-path: ./Dockerfile
         input-type: docker-daemon
+        ignore-failed-scan: true
+
+    - uses: github/codeql-action/upload-sarif@v1
+      if: always()
+      with:
+        sarif_file: ${{ steps.scan.outputs.sarifReport }}
