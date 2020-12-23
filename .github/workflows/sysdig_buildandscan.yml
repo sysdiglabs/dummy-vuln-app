@@ -16,7 +16,7 @@ jobs:
 
     - name: Sysdig Secure Inline Scan
       id: scan
-      uses: sysdiglabs/scan-action@v3
+      uses: sysdiglabs/scan-action@fix-more-than-50-annotations
       with:
         # Tag of the image to analyse
         image-tag: "sysdiglabs/dummy-vuln-app:latest"
