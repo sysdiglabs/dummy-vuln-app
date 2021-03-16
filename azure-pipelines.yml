@@ -15,6 +15,14 @@ steps:
     command: build
     tags: $(tags)
 
+- bash: docker run --rm \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    quay.io/sysdig/secure-inline-scan:2 \
+    --sysdig-token $(secureApiKey) \
+    --storage-type docker-daemon \
+    --storage-path /var/run/docker.sock \
+    $(imageName):latest
+  
 #- script: inline_scan analyze -s https://secure.sysdig.com -k $(secureApiKey) $(imageName):latest
 #  displayName: Scan image
 
