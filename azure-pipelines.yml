@@ -1,15 +1,13 @@
 pool:
   vmImage: 'ubuntu-16.04'
 
-container: 
-  image: sysdiglabs/secure-inline-scan:latest
-  options: -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock
-
 variables:
   imageName: 'sysdiglabs/dummy-vuln-app'
   tags: |
     latest
 steps:
+- bash: echo "Hello world"
+
 - task: Docker@2
   displayName: Build image
   inputs:
@@ -17,14 +15,14 @@ steps:
     command: build
     tags: $(tags)
 
-- script: inline_scan analyze -s https://secure.sysdig.com -k $(secureApiKey) $(imageName):latest
-  displayName: Scan image
+#- script: inline_scan analyze -s https://secure.sysdig.com -k $(secureApiKey) $(imageName):latest
+#  displayName: Scan image
 
-- task: Docker@2
-  inputs:
-    command: 'login'
+#- task: Docker@2
+#  inputs:
+#    command: 'login'
 
-- task: Docker@2
-  inputs:
-    command: 'push'
-    tags: $(tags)
+#- task: Docker@2
+#  inputs:
+#    command: 'push'
+#    tags: $(tags)
