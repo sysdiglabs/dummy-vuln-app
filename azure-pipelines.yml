@@ -2,7 +2,7 @@ pool:
   vmImage: 'ubuntu-16.04'
 
 container: 
-  image: sysdiglabs/secure_inline_scan:latest
+  image: sysdiglabs/secure-inline-scan:latest
   options: -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock
 
 variables:
