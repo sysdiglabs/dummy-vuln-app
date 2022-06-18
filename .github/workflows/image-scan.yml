@@ -1,5 +1,6 @@
 # this is an image scanning workflow from https://sysdig.com/blog/image-scanning-github-actions/
 
+
 name: Build and scan Docker Image
 on: [push]
 jobs:
