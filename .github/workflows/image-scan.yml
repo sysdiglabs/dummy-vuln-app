@@ -18,4 +18,4 @@ jobs:
         dockerfile-path: ./Dockerfile
         input-type: docker-daemon
         run-as-user: root
-        ignore-failed-scan: true
+        ignore-failed-scan: false
