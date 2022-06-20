@@ -20,3 +20,5 @@ jobs:
         input-type: docker-daemon
         run-as-user: root
         ignore-failed-scan: false
+
+
