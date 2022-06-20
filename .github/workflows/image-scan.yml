@@ -1,5 +1,5 @@
 # this is an image scanning workflow from https://sysdig.com/blog/image-scanning-github-actions/
-
+# Scan against Strict scanning policy in Sysdig
 
 name: Build and scan Docker Image
 on: [push]
