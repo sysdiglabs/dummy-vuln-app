@@ -1,0 +1,26 @@
+# this is an image scanning workflow from https://sysdig.com/blog/image-scanning-github-actions/
+# Scan against Strict scanning policy in Sysdig
+
+name: Build and scan Docker Image
+on: [push]
+env:
+  SYSDIG_URL: https://us2.app.sysdig.com
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag sysdiglabs/dummy-vuln-app:latest
+    - name: Download Sysdig Secure Inline Scan - New
+      run: |
+        curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"
+    - name: Set Permissions Sysdig Secure Inline Scan - New
+      run: |
+        chmod +x ./sysdig-cli-scanner
+    - name: Scan Image Sysdig Secure Inline Scan - New
+      env:
+        SECURE_API_TOKEN: ${{ secrets.SYSDIG_SECURE_TOKEN }}
+      run: ./sysdig-cli-scanner --apiurl ${{env.SYSDIG_URL}} --full-vulns-table docker://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
