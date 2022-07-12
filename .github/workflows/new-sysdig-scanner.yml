@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag sysdiglabs/dummy-vuln-app:latest
+      run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:${{ github.run_number }}
     - name: Download Sysdig Secure Inline Scan - New
       run: |
         curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"
