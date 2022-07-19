@@ -1,5 +1,6 @@
 version: 0.2
 
+
 env:
   variables:
     IMAGE_NAME: "sysdiglabs/dummy-vuln-app:latest"
