@@ -19,8 +19,6 @@ spec:
         volumeMounts:
         - name: var-run
           mountPath: /var/run
-      - name: jnlp
-        image: jenkins/inbound-agent:4.6-1
         
     volumes:
     - emptyDir: {}
