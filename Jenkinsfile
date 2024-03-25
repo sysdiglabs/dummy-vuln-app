@@ -64,5 +64,13 @@ spec:
                 sysdig engineCredentialsId: 'sysdig-secure-api-credentials', name: 'sysdig_secure_images', inlineScanning: true
             }
         }
+         stage('Push Docker Image'){  // Pushes the images to the Container Registry
+            steps{
+                withCredentials([usernamePassword(credentialsId: 'gcr_rw_token', usernameVariable: 'username', passwordVariable: 'password')]) {
+                    sh 'echo ${password} | docker login ${registry_url} -u ${username} --password-stdin'
+                    sh 'docker push ${registry_url}/${registry_repo}/${docker_tag}'
+                }
+            }
+        }
    }
 }
