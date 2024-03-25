@@ -62,7 +62,7 @@ spec:
         }
         stage('Scanning Image') {
             steps {
-                  sysdigImageScan engineCredentialsId: 'sysdig-sa-credentials', imageName: "docker.io/sysdigcicd/cronagent:latest", engineURL: "https://secure.sysdig.com", bailOnFail: true, bailOnPluginFail: true
+                  sysdigImageScan engineCredentialsId: 'sysdig-secure-api-credentials', imageName: "docker.io/sysdigcicd/cronagent:latest", engineURL: "https://secure.sysdig.com", bailOnFail: true, bailOnPluginFail: true
              
                         }
         }
