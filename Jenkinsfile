@@ -62,11 +62,14 @@ spec:
         }
         stage('Scanning Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'sysdig-secure-api-credentials', passwordVariable: 'SECURE_API_TOKEN', usernameVariable: '')]) {
-                    container("dind") {
-                        sh "./sysdig-cli-scanner --apiurl https://secure.sysdig.com ${params.DOCKER_REPOSITORY}  --policy sysdig-best-practices --detailed-policies-eval"
-                    }
-                }
+                        script{
+                            if(env.sysdig_plugin){
+                                sysdigImageScan engineCredentialsId: 'sysdig-sa-credentials', imageName: "${registry_url}/${registry_repo}/${docker_tag}", engineURL: "${params.sysdig_url}", policiesToApply: "${params.plugin_policies_to_apply}", bailOnFail: "${params.bail_on_fail}", bailOnPluginFail: "${params.bail_on_plugin_fail}"
+                            }
+                            else{
+                                echo 'Using CLI Scan'
+                            }
+                        }
             }
         }
         stage('Push Docker Image'){  // Pushes the images to the Container Registry
